@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2023 1040EZ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+</head>
+
+<body>
+
+    <header class="section">
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="#">
+                    <strong>2023 1040EZ</strong>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="section" id="app">
+        <div class="container">
+            <h1 class="title">2023 Simplified Tax Form</h1>
+            <div class="container">
+
+                <table class="table is-fullwidth is-striped">
+                    <div class="tbody">
+                        <tr class="row-1">
+                            <td class="td title is-4">Income</td>
+                            <td class="td"><b>1 </b>Wages, salaries, and tips. This should be shown in box 1 of your
+                                Form(s) W-2.
+                                Attach your Form(s) W-2.</td>
+                            <td class="td"><input v-model="value1" name="value-1" type="number"></td>
+                        </tr>
+                        <tr class="row-2">
+                            <td class="td"></td>
+                            <td class="td"><b>2 </b>Taxable interest. If the total is over $1,500, you cannot use Form
+                                1040EZ.</td>
+                            <td class="td"><input v-model="value2" name="value-2" type="number"></td>
+                        </tr>
+                        <tr class="row-3">
+                            <td class="td"></td>
+                            <td class="td"><b>3 </b> Unemployment compensation and Alaska Permanent Fund dividends (see
+                                instructions).</td>
+                            <td class="td"><input v-model="value3" name="value-3" type="number"></td>
+                        </tr>
+                        <tr class="row-4">
+                            <td class="td"></td>
+                            <td class="td"><b>4 </b>Add lines 1, 2, and 3. This is your adjusted gross income.</td>
+                            <td class="td"><input v-model="value4" name="value-4" type="number" readonly>{{}}</td>
+                        </tr>
+                        <tr class="row-5">
+                            <td class="td"></td>
+                            <td class="td"><b>5 </b>If filing jointly check box to enter $27,700, or $13,850 if
+                                un-checked.<br>
+                                Spouse <input type="checkbox" v-model="check5">
+                            </td>
+                            <td class="td"><input v-model="value5" name="value-5" type="number" readonly></td>
+                        </tr>
+                        <tr class="row-6">
+                            <td class="td"></td>
+                            <td class="td"><b>6 </b>Subtract line 5 from line 4. If line 5 is larger than line 4, enter
+                                -0-.
+                                This is your taxable income</td>
+                            <td class="td"><input v-model="value6" name="value-6" type="number" readonly></td>
+                        </tr>
+                        <tr class="row-7">
+                            <td class="td title is-4">Payments, Credits, and Tax</td>
+                            <td class="td"><b>7 </b>Federal income tax withheld from Form(s) W-2 and 1099.</td>
+                            <td class="td"><input v-model="value7" name="value-7" type="number"></td>
+                        </tr>
+                        <tr class="row-8">
+                            <td class="td"></td>
+                            <td class="td"><b>8 </b>Earned income credit (EIC)</td>
+                            <td class="td"><input v-model="value8" name="value-8" type="number"></td>
+                        </tr>
+                        <tr class="row-9">
+                            <td class="td"></td>
+                            <td class="td"><b>9 </b>Add lines 7 and 8a. These are your total payments and credits.</td>
+                            <td class="td"><input v-model="value9" name="value-9" type="number" readonly></td>
+                        </tr>
+                        <tr class="row-10">
+                            <td class="td"></td>
+                            <td class="td"><b>10 </b>Tax. Use the amount on line 6 above to find your tax in the tax
+                                table in the
+                                instructions. Then, enter the tax from the table on this line</td>
+                            <td class="td"><input v-model="value10" name="value-10" type="number" readonly></td>
+                        </tr>
+                        <tr class="row-11">
+                            <td class="td"></td>
+                            <td class="td"><b>11 </b>Other Taxes</td>
+                            <td class="td"><input v-model="value11" name="value-11" type="number"></td>
+                        </tr>
+                        <tr class="row-12">
+                            <td class="td"></td>
+                            <td class="td"><b>12 </b>Add lines 10 and 11. This is your total tax</td>
+                            <td class="td"><input v-model="value12" name="value-12" type="number"></td>
+                        </tr>
+                        <tr class="row-13">
+                            <td class="td title is-4">Refund</td>
+                            <td class="td"><b>13 </b>If line 9 is larger than line 12, subtract line 12 from line 9.
+                                This is your refund.
+                                If Form 8888 is attached, check here</td>
+                            <td class="td"><input v-model="value13" name="value-13" type="number" readonly></td>
+                        </tr>
+                        <tr class="row-14">
+                            <td class="td title is-4">Amount You Owe</td>
+                            <td class="td"><b>14 </b>If line 12 is larger than line 9, subtract line 9 from line 12.
+                                This is
+                                the amount you owe. For details on how to pay, see instructions.</td>
+                            <td class="td"><input v-model="value14" name="value-14" type="number" readonly></td>
+                        </tr>
+                    </div>
+                </table>
+
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <p>
+                <a href="">License BSD</a>.
+            </p>
+        </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.min.js"></script>
+    <script src="js/index.js"></script>
+</body>
+
+</html>
