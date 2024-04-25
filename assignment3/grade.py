@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import time
+import traceback
 import uuid
 
 from selenium import webdriver
@@ -18,8 +19,10 @@ browser_options = webdriver.ChromeOptions()
 if not DEBUG:
     browser_options.add_argument("--headless")
 
+
 class StopGrading(Exception):
     pass
+
 
 class py4web(object):
 
@@ -64,7 +67,7 @@ class py4web(object):
                     raise StopGrading
                 print("- app started!")
                 break
-        self.browser =  webdriver.Chrome(options=browser_options)
+        self.browser = webdriver.Chrome(options=browser_options)
 
     def __del__(self):
         pass
@@ -92,8 +95,12 @@ class py4web(object):
         self.browser.find_element(By.NAME, "email").send_keys(user["email"])
         self.browser.find_element(By.NAME, "password").send_keys(user["password"])
         self.browser.find_element(By.NAME, "password_again").send_keys(user["password"])
-        self.browser.find_element(By.NAME, "first_name").send_keys(user.get("first_name", ""))
-        self.browser.find_element(By.NAME, "last_name").send_keys(user.get("last_name", ""))
+        self.browser.find_element(By.NAME, "first_name").send_keys(
+            user.get("first_name", "")
+        )
+        self.browser.find_element(By.NAME, "last_name").send_keys(
+            user.get("last_name", "")
+        )
         self.browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
 
     def login(self, user):
@@ -137,6 +144,7 @@ class ProtoAssignment(py4web):
             except StopGrading:
                 break
             except Exception as e:
+                traceback.print_exc()
                 self.append_comment(0, f"Error in {step.__name__}: {e}")
         grade = 0
         for points, comment in self._comments:
@@ -159,33 +167,41 @@ class Assignment(ProtoAssignment):
     def step1(self):
         """I can add one item."""
         self.login(self.user1)
-        self.goto('index')
+        self.goto("index")
         self.item = str(uuid.uuid4())
-        self.browser.find_element(By.CSS_SELECTOR, "input.add-item").send_keys(self.item)
+        self.browser.find_element(By.CSS_SELECTOR, "input.add-item").send_keys(
+            self.item
+        )
         self.browser.find_element(By.CSS_SELECTOR, "i.add-item").click()
         item_places = self.browser.find_elements(By.CSS_SELECTOR, "table td.item")
-        assert self.item in [i.text for i in item_places]
+        assert self.item in [
+            i.text for i in item_places
+        ], "The item is not added to the list."
         return 1, "Item added correctly."
 
     def step2(self):
         self.refresh()
         item_places = self.browser.find_elements(By.CSS_SELECTOR, "table td.item")
-        assert self.item in [i.text for i in item_places]
+        assert self.item in [i.text for i in item_places], "The item does not persist."
         return 2, "The item persists."
 
     def step3(self):
         """Another user cannot see the item."""
         self.login(self.user2)
-        self.goto('index')
+        self.goto("index")
         item_places = self.browser.find_elements(By.CSS_SELECTOR, "table td.item")
-        assert self.item not in [i.text for i in item_places]
+        assert self.item not in [
+            i.text for i in item_places
+        ], "The item is visible to another user."
         return 1, "The item is not visible to another user."
 
     def step4(self):
         self.login(self.user1)
-        self.goto('index')
+        self.goto("index")
         self.item2 = str(uuid.uuid4())
-        self.browser.find_element(By.CSS_SELECTOR, "input.add-item").send_keys(self.item2)
+        self.browser.find_element(By.CSS_SELECTOR, "input.add-item").send_keys(
+            self.item2
+        )
         self.browser.find_element(By.CSS_SELECTOR, "i.add-item").click()
         time.sleep(SERVER_WAIT)
         item_places = self.browser.find_elements(By.CSS_SELECTOR, "table td.item")
@@ -204,10 +220,15 @@ class Assignment(ProtoAssignment):
         self.browser.implicitly_wait(0.2)
         # Now the checked item should be in position 2.
         item_rows = self.browser.find_elements(By.CSS_SELECTOR, "tr.item-row")
-        assert item1 in item_rows[1].find_element(By.CSS_SELECTOR, "td.item").text, "The checked item should be in position 2."
+        assert (
+            item1 in item_rows[1].find_element(By.CSS_SELECTOR, "td.item").text
+        ), "The checked item should be in position 2."
         self.item1 = item1
         self.item0 = item_rows[0].find_element(By.CSS_SELECTOR, "td.item").text
-        return 1, "it's possible to mark an item as purchased, and checked items are moved to the bottom of the list."
+        return (
+            1,
+            "it's possible to mark an item as purchased, and checked items are moved to the bottom of the list.",
+        )
 
     def step6(self):
         """Checks persistency of the two items."""
@@ -222,21 +243,29 @@ class Assignment(ProtoAssignment):
     def step7(self):
         self.refresh()
         self.item = str(uuid.uuid4())
-        self.browser.find_element(By.CSS_SELECTOR, "input.add-item").send_keys(self.item)
+        self.browser.find_element(By.CSS_SELECTOR, "input.add-item").send_keys(
+            self.item
+        )
         self.browser.find_element(By.CSS_SELECTOR, "i.add-item").click()
         time.sleep(SERVER_WAIT)
         item_places = self.browser.find_elements(By.CSS_SELECTOR, "table td.item")
-        assert self.item in item_places[0].text, "The new item should be added to the top of the list."
+        assert (
+            self.item in item_places[0].text
+        ), "The new item should be added to the top of the list."
         item_rows = self.browser.find_elements(By.CSS_SELECTOR, "table tr.item-row")
         first_check_box = item_rows[0].find_element(By.CSS_SELECTOR, "td.check input")
         last_check_box = item_rows[-1].find_element(By.CSS_SELECTOR, "td.check input")
-        assert not first_check_box.is_selected(), "The first checkbox should not be selected."
+        assert (
+            not first_check_box.is_selected()
+        ), "The first checkbox should not be selected."
         assert last_check_box.is_selected(), "The last checkbox should be selected."
         # If I click on the first item, it should become the last.
         first_check_box.click()
         self.browser.implicitly_wait(0.2)
         item_rows = self.browser.find_elements(By.CSS_SELECTOR, "table tr.item-row")
-        assert self.item in item_rows[-1].text, "The new item should be moved to the last position."
+        assert (
+            self.item in item_rows[-1].text
+        ), "The new item should be moved to the last position."
         # Now if I unclick the middle row,
         middle_check_box = item_rows[1].find_element(By.CSS_SELECTOR, "td.check input")
         middle_item = item_rows[1].find_element(By.CSS_SELECTOR, "td.item").text
@@ -244,44 +273,66 @@ class Assignment(ProtoAssignment):
         self.browser.implicitly_wait(0.2)
         # The middle row should be moved to the top.
         item_rows = self.browser.find_elements(By.CSS_SELECTOR, "table tr.item-row")
-        assert middle_item in item_rows[0].text, "The middle item should be moved to the top."
+        assert (
+            middle_item in item_rows[0].text
+        ), "The middle item should be moved to the top."
         self.refresh()
         item_rows = self.browser.find_elements(By.CSS_SELECTOR, "table tr.item-row")
-        checkboxes = [i.find_element(By.CSS_SELECTOR, "td.check input").is_selected() for i in item_rows]
-        assert checkboxes == [False, False, True], "The checkboxes should be in the correct state."
+        checkboxes = [
+            i.find_element(By.CSS_SELECTOR, "td.check input").is_selected()
+            for i in item_rows
+        ]
+        assert checkboxes == [
+            False,
+            False,
+            True,
+        ], "The checkboxes should be in the correct state."
         return 1, "The dynamics of checking/unchecking items are correct."
 
     def step8(self):
         self.login(self.user2)
-        self.goto('index')
+        self.goto("index")
         self.browser.implicitly_wait(0.2)
         self.item0 = str(uuid.uuid4())
         self.item1 = str(uuid.uuid4())
-        self.browser.find_element(By.CSS_SELECTOR, "input.add-item").send_keys(self.item0)
+        self.browser.find_element(By.CSS_SELECTOR, "input.add-item").send_keys(
+            self.item0
+        )
         self.browser.find_element(By.CSS_SELECTOR, "i.add-item").click()
         time.sleep(SERVER_WAIT)
-        self.browser.find_element(By.CSS_SELECTOR, "input.add-item").send_keys(self.item1)
+        self.browser.find_element(By.CSS_SELECTOR, "input.add-item").send_keys(
+            self.item1
+        )
         self.browser.find_element(By.CSS_SELECTOR, "i.add-item").click()
         time.sleep(SERVER_WAIT)
         item_rows = self.browser.find_elements(By.CSS_SELECTOR, "table tr.item-row")
         items = [i.find_element(By.CSS_SELECTOR, "td.item").text for i in item_rows]
-        assert [self.item1, self.item0] == items, "The last inserted item should be first."
-        delete_buttons = [i.find_element(By.CSS_SELECTOR, "td.trash i") for i in item_rows]
+        assert [
+            self.item1,
+            self.item0,
+        ] == items, "The last inserted item should be first."
+        delete_buttons = [
+            i.find_element(By.CSS_SELECTOR, "td.trash i") for i in item_rows
+        ]
         assert len(delete_buttons) == 2, "There should be two delete buttons."
         delete_buttons[0].click()
         time.sleep(SERVER_WAIT)
         item_rows = self.browser.find_elements(By.CSS_SELECTOR, "table tr.item-row")
         assert len(item_rows) == 1, "There should be one item left."
-        assert self.item0 in item_rows[0].find_element(By.CSS_SELECTOR, "td.item").text, "The correct item should be left."
+        assert (
+            self.item0 in item_rows[0].find_element(By.CSS_SELECTOR, "td.item").text
+        ), "The correct item should be left."
         self.refresh()
         item_rows = self.browser.find_elements(By.CSS_SELECTOR, "table tr.item-row")
         assert len(item_rows) == 1, "There should be one item left after refresh."
-        assert self.item0 in item_rows[0].find_element(By.CSS_SELECTOR, "td.item").text, "The correct item should be left after refresh."
+        assert (
+            self.item0 in item_rows[0].find_element(By.CSS_SELECTOR, "td.item").text
+        ), "The correct item should be left after refresh."
         return 1, "Deletion works correctly."
 
     def step9(self):
         self.login(self.user1)
-        self.goto('index')
+        self.goto("index")
         self.browser.implicitly_wait(0.2)
         item_rows = self.browser.find_elements(By.CSS_SELECTOR, "table tr.item-row")
         assert len(item_rows) == 3, "The items of the other user should be visible."
@@ -289,6 +340,7 @@ class Assignment(ProtoAssignment):
 
     # I would like to check that a user cannot delete another user's items, but don't know
     # how to check that in selenium.
+
 
 if __name__ == "__main__":
     tests = Assignment(".")
