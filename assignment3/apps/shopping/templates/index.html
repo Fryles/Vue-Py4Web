@@ -20,9 +20,11 @@
         <td class="is-narrow"></td>
       </tr>
       <tr v-for="i in shopping_items" class="item-row">
-        <td class="check is-narrow"><input v-model="i.checked" type="checkbox"></td>
+        <td class="check is-narrow"><input v-model="i.checked" type="checkbox" @click.once="purchase_item(i)"></td>
         <td class="item">{{i.item_name}}</td>
-        <td @click="delete_item" class=" trash is-narrow"><i class="trash has-text-danger fa-solid fa-trash-can"></i>
+        <td @click.once="delete_item(i)" class="trash is-narrow"><i
+            class="trash has-text-danger fa-solid fa-trash-can"></i>
+        </td>
         </td>
       </tr>
     </table>

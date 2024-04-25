@@ -71,7 +71,7 @@ def update_items():
     try:
         print("request.json: ", request.json)
         db_items = db(db.shopping_list.owner == get_user_email()).select()
-        for item in request.json:
+        for item in request.json["items"]:
             # compare db items to request.json items
             # if item is in db, update it
             # if item is not in db, add it
@@ -87,8 +87,11 @@ def update_items():
             else:
                 # add item
                 db.shopping_list.insert(item_name=item_name, purchased=purchased)
+
         for db_item in db_items:
-            if db_item["item_name"] not in [item["item_name"] for item in request.json]:
+            if db_item["item_name"] not in [
+                item["item_name"] for item in request.json["items"]
+            ]:
                 # delete item
                 db(db.shopping_list.item_name == db_item["item_name"]).delete()
         return dict(success=True)
