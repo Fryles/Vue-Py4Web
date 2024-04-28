@@ -1,4 +1,6 @@
 submission.zip
-apps/.service
 __pycache__
-
+*.pyc
+apps/*/databases/*
+apps/.service/*
+!databases/README.md
