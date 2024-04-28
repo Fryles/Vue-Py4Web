@@ -8,26 +8,30 @@ app.data = {
 	data: function () {
 		return {
 			contacts: [],
+			name: "",
+			affiliation: "",
+			desc: "",
 		};
 	},
 	methods: {
 		add_contact: function () {
-			let form = document.getElementById("add_contact_form");
-			let form_data = new FormData(form);
-			let post_data = {};
-			form_data.forEach(function (value, key) {
-				post_data[key] = value;
-			});
+			let contact = {
+				name: this.name,
+				affiliation: this.affiliation,
+				desc: this.desc,
+			};
+			console.log("adding: " + contact.name);
 			fetch("/contact_cards/add_contact", {
 				method: "POST",
-				body: JSON.stringify(post_data),
-			})
-				.then((response) => response.json())
-				.then((data) => {
-					app.vue.contacts.push(data.contact);
-					console.log(data.contact);
-				});
+				headers: {
+					"Content-Type": "application/json",
+				}, 
+				body: JSON.stringify(contact),
+			}).then((data) => {
+				console.log(data);
+			});
 		},
+		delete_contact: function (item) {},
 	},
 };
 

@@ -1,51 +1,53 @@
 [[extend 'layout.html']]
 
 <style>
-[v-cloak] {
-     display: none;
-}
+  [v-cloak] {
+    display: none;
+  }
 </style>
-
+<style>
+  html,
+  body {
+    background-color: pink !important
+  }
+</style>
 
 <div class="section" id="app" v-cloak>
   <!-- Put here your Vue.js template -->
   <div class="container">
     <h1 class="title">Contacts</h1>
-    <div><button class="button is-success" id="add_button">Add Contact</button></div>
+    <div><button class="button is-success" id="add_button" @click="add_contact">Add Contact</button></div>
     <div class="card contact mt-4">
       <div class="card-content">
         <div class="media">
           <div class="media-left">
             <figure class="photo image is-96x96">
-              <img class="photo" src="https://bulma.io/assets/images/placeholders/96x96.png"/>
+              <img class="photo" src="https://bulma.io/assets/images/placeholders/96x96.png" />
               <input id="file-input" type="file" style="display: none"
-              accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
             </figure>
           </div>
           <div class="media-content">
             <p class="title person-name">
-              <input type="text" class="input is-4 title" 
-                    name="name"
-                    placeholder="Name"
-              />
+              <input type="text" class="input is-4 title" name="name" placeholder="Name" v-model="name" />
             </p>
             <p class="subtitle person-affiliation">
-              <input type="text" class="input is-6" 
-                    placeholder="Affiliation"
-                    name="affiliation"
-              />
+              <input type="text" class="input is-6" placeholder="Affiliation" name="affiliation"
+                v-model="affiliation" />
             </p>
           </div>
-          <div class="media-right"><i class="delete-button has-text-danger fa-solid fa-trash-can trash"></i></div>
+          <div class="media-right" @click="delete_contact"><i
+              class="delete-button has-text-danger fa-solid fa-trash-can trash"></i></div>
         </div>
-          <textarea class="textarea"
-                    name="description"
-                    placeholder="Description"
-            ></textarea> 
-        </div>
+        <textarea class="textarea" name="description" placeholder="Description" v-model="desc"></textarea>
       </div>
     </div>
+    <div class="container" v-for="i in contacts">
+      <span>{{i}}</span>
+    </div>
+
   </div>
+</div>
 </div>
 
 
@@ -53,7 +55,8 @@
 <!-- Loads the index-specific js for Vue -->
 <script>
   let get_contacts_url = "[[=XML(get_contacts_url)]]";
-  // Add more URLs if you wish. 
+  let add_contact_url = "[[=XML(add_contact_url)]]"
+  // Add more URLs if you wish.
 </script>
 
 <script src="js/index.js"></script>

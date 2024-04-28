@@ -46,6 +46,7 @@ from .models import get_user_email
 def index():
     return dict(
         get_contacts_url=URL("get_contacts"),
+        add_contact_url=URL("add_contact"),
         # Complete.
     )
 
@@ -56,6 +57,21 @@ def get_contacts():
     # filter by user email
     contacts = db(db.contact_card.user_email == get_user_email()).select().as_list()
     return dict(contacts=contacts)
+
+
+@action("add_contact", method=["POST"])
+@action.uses(db, auth.user)
+def add_contact():
+    data = request.json
+    if data is None:
+        return dict()
+    # add user email to data
+    data["user_email"] = get_user_email()
+
+    print(data)
+    # insert data into db
+    db.contact_card.insert(data)
+    return dict()
 
 
 # You can add more methods.
