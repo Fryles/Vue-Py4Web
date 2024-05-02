@@ -46,6 +46,7 @@ from .models import get_user_email
 def index():
     return dict(
         get_contacts_url=URL("get_contacts"),
+        add_contact_url=URL("add_contact"),
         # Complete.
     )
 
@@ -88,7 +89,10 @@ def delete_contact():
     # delete contact from db
     db(db.contact_card.id == data["id"]).delete()
     return dict()
+
+
 #
+
 
 @action("edit_contact", method=["POST"])
 @action.uses(db, auth.user)
