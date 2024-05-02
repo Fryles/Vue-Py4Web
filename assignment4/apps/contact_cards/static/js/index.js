@@ -8,30 +8,105 @@ app.data = {
 	data: function () {
 		return {
 			contacts: [],
+			name: "",
+			affiliation: "",
+			desc: "",
+			image: "",
+			imageUrl: "https://bulma.io/assets/images/placeholders/96x96.png",
 		};
 	},
 	methods: {
 		add_contact: function () {
-			let form = document.getElementById("add_contact_form");
-			let form_data = new FormData(form);
-			let post_data = {};
-			form_data.forEach(function (value, key) {
-				post_data[key] = value;
-			});
+			let contact = {
+				name: this.name,
+				affiliation: this.affiliation,
+				desc: this.desc,
+				image: this.image,
+				id: -this.contacts.length,
+			};
+			//clear fields
+			this.name = "";
+			this.affiliation = "";
+			this.desc = "";
+			this.image = "";
+			this.imageUrl = "https://bulma.io/assets/images/placeholders/96x96.png";
+			this.contacts.push(contact);
 			fetch("/contact_cards/add_contact", {
 				method: "POST",
-				body: JSON.stringify(post_data),
-			})
-				.then((response) => response.json())
-				.then((data) => {
-					app.vue.contacts.push(data.contact);
-					console.log(data.contact);
-				});
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(contact),
+			}).then((data) => {
+				console.log(this.contacts);
+				console.log(data);
+				this.contacts[this.contacts.length - 1].id = data.id;
+			});
+		},
+		delete_contact: function (item) {
+			console.log("deleting: " + item.name);
+			this.contacts = this.contacts.filter((contact) => contact.id !== item.id);
+			fetch("/contact_cards/delete_contact", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(item),
+			}).then((data) => {
+				console.log(this.contacts);
+				console.log(data);
+			});
+		},
+		uploadImage: function (e, contact = null) {
+			const file = e.target.files[0];
+			// get dataurl
+			let dataurl = null;
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = (e) => {
+				dataurl = e.target.result;
+				if (!contact) {
+					this.imageUrl = URL.createObjectURL(file);
+					this.image = dataurl;
+				} else {
+					contact.imageUrl = URL.createObjectURL(file);
+					contact.image = dataurl;
+					//update contacts
+					this.contacts = this.contacts.map((c) => {
+						if (c.id === contact.id) {
+							return contact;
+						}
+						return c;
+					});
+					this.save_input(contact);
+				}
+			};
+		},
+		save_input: function (contact) {
+			//save input to server
+			fetch("/contact_cards/edit_contact", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(contact),
+			}).then((data) => {
+				console.log(data);
+			});
+		},
+		click_figure: function (e) {
+			console.log(e.target);
+			//get input element
+			let input = e.target.nextElementSibling;
+			//click the input element
+			input.click();
+		},
+		toggle_read_only: function (e) {
+			let input = e.target;
+			input.readOnly = !input.readOnly;
 		},
 	},
 };
-
-app.vue = Vue.createApp(app.data).mount("#app");
 
 app.load_data = function () {
 	fetch("/contact_cards/get_contacts", {
@@ -40,8 +115,15 @@ app.load_data = function () {
 		.then((response) => response.json())
 		.then((data) => {
 			app.vue.contacts = data.contacts;
-			console.log(data.contacts);
+			for (let i = 0; i < app.vue.contacts.length; i++) {
+				if (app.vue.contacts[i].image == null) {
+					app.vue.contacts[i].image =
+						"https://bulma.io/assets/images/placeholders/96x96.png";
+				}
+			}
+			console.log(app.vue.contacts);
 		});
 };
 
+app.vue = Vue.createApp(app.data).mount("#app");
 app.load_data();

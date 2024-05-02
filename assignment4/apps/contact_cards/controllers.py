@@ -50,6 +50,7 @@ def index():
     )
 
 
+# returns all contacts for the current user
 @action("get_contacts")
 @action.uses(db, auth.user)
 def get_contacts():
@@ -58,4 +59,47 @@ def get_contacts():
     return dict(contacts=contacts)
 
 
-# You can add more methods.
+# adds a contact to the db and returns the id of the created contact
+@action("add_contact", method=["POST"])
+@action.uses(db, auth.user)
+def add_contact():
+    data = request.json
+    if data is None:
+        return dict()
+    # remove id
+    data.pop("id", None)
+    # insert data into db
+    db.contact_card.insert(**data)
+    # return db created id
+    return dict(id=db(db.contact_card.name == data["name"]).select().first().id)
+
+
+# deletes a contact from the db (if the user is the owner of the contact)
+@action("delete_contact", method=["POST"])
+@action.uses(db, auth.user)
+def delete_contact():
+    data = request.json
+    if data is None:
+        return dict()
+    # check if user is owner
+    owner = db(db.contact_card.id == data["id"]).select().first().user_email
+    if not owner == get_user_email():
+        abort(403)
+    # delete contact from db
+    db(db.contact_card.id == data["id"]).delete()
+    return dict()
+#
+
+@action("edit_contact", method=["POST"])
+@action.uses(db, auth.user)
+def edit_contact():
+    data = request.json
+    if data is None:
+        return dict()
+    # check if user is owner
+    owner = db(db.contact_card.id == data["id"]).select().first().user_email
+    if not owner == get_user_email():
+        abort(403)
+    # update contact in db
+    db(db.contact_card.id == data["id"]).update(**data)
+    return dict()

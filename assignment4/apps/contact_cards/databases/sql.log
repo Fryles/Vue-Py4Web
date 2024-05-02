@@ -38,3 +38,36 @@ CREATE TABLE "contact_card"(
     "contact_image" TEXT
 );
 success!
+timestamp: 2024-04-29T14:05:40.771989
+ALTER TABLE "contact_card" ADD "name" CHAR(512);
+timestamp: 2024-04-29T14:05:40.776504
+ALTER TABLE "contact_card" ADD "affiliation" CHAR(512);
+timestamp: 2024-04-29T14:05:40.780505
+ALTER TABLE "contact_card" ADD "desc" TEXT;
+timestamp: 2024-04-29T14:05:40.785015
+ALTER TABLE "contact_card" ADD "image" TEXT;
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
