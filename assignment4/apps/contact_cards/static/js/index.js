@@ -45,7 +45,7 @@ app.data = {
 			}).then((data) => {
 				data.json().then((data) => {
 					console.log(data);
-					contact.id = data.id;
+					this.contacts[this.contacts.length - 1].id = data.id;
 				});
 			});
 		},
