@@ -11,6 +11,7 @@
   <div class="container">
     <h1 class="title">Contacts</h1>
     <div><button class="button is-success" id="add_button" @click="add_contact">Add Contact</button></div>
+
   </div>
 
   <!-- Start of contact cards-->
@@ -50,7 +51,10 @@
 
   [[block page_scripts]]
   <!-- Loads the index-specific js for Vue -->
-
+  <script>
+    let get_contacts_url = "[[=XML(get_contacts_url)]]";
+    // Add more URLs if you wish.
+  </script>
 
   <script src="js/index.js"></script>
   [[end]]
