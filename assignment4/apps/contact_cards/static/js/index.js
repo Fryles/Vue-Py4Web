@@ -105,11 +105,7 @@ app.data = {
 			//click the input element
 			input.click();
 		},
-		toggleReadonly: function (e) {
-			e.preventDefault();
-			let input = e.target;
-			input.toggleAttribute("readonly");
-		},
+		toggleReadonly: function (e) {},
 	},
 };
 

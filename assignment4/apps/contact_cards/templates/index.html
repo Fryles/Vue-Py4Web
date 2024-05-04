@@ -30,18 +30,18 @@
           <div class="media-content">
             <p class="title person-name">
               <input @change="save_input(i)" @click="toggleReadonly" @blur="toggleReadonly" type="text"
-                class="input is-4 title" name="name" placeholder="Name" v-model="i.name" readonly />
+                class="input is-4 title" name="name" placeholder="Name" v-model="i.name" />
             </p>
             <p class="subtitle person-affiliation">
               <input @change="save_input(i)" type="text" class="input is-6" placeholder="Affiliation" name="affiliation"
-                @click="toggleReadonly" @blur="toggleReadonly" v-model="i.affiliation" readonly />
+                @click="toggleReadonly" @blur="toggleReadonly" v-model="i.affiliation" />
             </p>
           </div>
           <div class="media-right" @click="delete_contact(i)"><i
               class="delete-button has-text-danger fa-solid fa-trash-can trash"></i></div>
         </div>
         <textarea @change="save_input(i)" class="textarea" @click="toggleReadonly" @blur="toggleReadonly"
-          name="description" placeholder="Description" v-model="i.desc" readonly></textarea>
+          name="description" placeholder="Description" v-model="i.desc"></textarea>
       </div>
     </div>
 
