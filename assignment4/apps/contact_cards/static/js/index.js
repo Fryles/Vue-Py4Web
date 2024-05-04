@@ -105,6 +105,10 @@ app.data = {
 			//click the input element
 			input.click();
 		},
+		toggleRO: function (e) {
+			let input = e.target;
+			input.readOnly = !input.readOnly;
+		},
 	},
 };
 
