@@ -11,71 +11,46 @@
   <div class="container">
     <h1 class="title">Contacts</h1>
     <div><button class="button is-success" id="add_button" @click="add_contact">Add Contact</button></div>
-    <div class="card mt-4">
+  </div>
+
+  <!-- Start of contact cards-->
+
+  <div class="container">
+    <div class="card contact mt-4" v-for="i in contacts" :key="i.id">
       <div class="card-content">
         <div class="media">
           <div class="media-left">
-            <figure @click="click_figure" class="photo image is-96x96">
-              <img class="photo" :src="imageUrl">
-              <input @change="uploadImage($event)" id="file-input" type="file" style="display: none"
+            <figure class="photo image is-96x96">
+              <img class="photo" :src="i.image" @click="click_figure">
+              <input @input="uploadImage($event, contact=i)" type="file" style="display: none"
                 accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
             </figure>
           </div>
           <div class="media-content">
             <p class="title person-name">
-              <input type="text" class="input is-4 title" name="name" placeholder="Name" v-model="name" />
+              <input @input="save_input(i)" @focus="toggle_read_only" @blur="toggle_read_only" type="text"
+                class="input is-4 title" name="name" placeholder="Name" v-model="i.name" readonly />
             </p>
             <p class="subtitle person-affiliation">
-              <input type="text" class="input is-6" placeholder="Affiliation" name="affiliation"
-                v-model="affiliation" />
+              <input @input="save_input(i)" type="text" class="input is-6" placeholder="Affiliation" name="affiliation"
+                @focus="toggle_read_only" @blur="toggle_read_only" v-model="i.affiliation" readonly />
             </p>
           </div>
-          <div class="media-right" @click="delete_contact"><i
+          <div class="media-right" @click="delete_contact(i)"><i
               class="delete-button has-text-danger fa-solid fa-trash-can trash"></i></div>
         </div>
-        <textarea class="textarea" name="description" placeholder="Description" v-model="desc"></textarea>
+        <textarea @input="save_input(i)" class="textarea" @focus="toggle_read_only" @blur="toggle_read_only"
+          name="description" placeholder="Description" v-model="i.desc" readonly></textarea>
       </div>
     </div>
 
-    <!-- Start of contact cards-->
+  </div>
 
-    <div class="container">
-      <div class="card contact mt-4" v-for="i in contacts" :key="i.id">
-        <div class="card-content">
-          <div class="media">
-            <div class="media-left">
-              <figure class="photo image is-96x96">
-                <img class="photo" :src="i.image" @click="click_figure">
-                <input @input="uploadImage($event, contact=i)" type="file" style="display: none"
-                  accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
-              </figure>
-            </div>
-            <div class="media-content">
-              <p class="title person-name">
-                <input @input="save_input(i)" @focus="toggle_read_only" @blur="toggle_read_only" type="text"
-                  class="input is-4 title" name="name" placeholder="Name" v-model="i.name" readonly />
-              </p>
-              <p class="subtitle person-affiliation">
-                <input @input="save_input(i)" type="text" class="input is-6" placeholder="Affiliation"
-                  name="affiliation" @focus="toggle_read_only" @blur="toggle_read_only" v-model="i.affiliation"
-                  readonly />
-              </p>
-            </div>
-            <div class="media-right" @click="delete_contact(i)"><i
-                class="delete-button has-text-danger fa-solid fa-trash-can trash"></i></div>
-          </div>
-          <textarea @input="save_input(i)" class="textarea" @focus="toggle_read_only" @blur="toggle_read_only"
-            name="description" placeholder="Description" v-model="i.desc" readonly></textarea>
-        </div>
-      </div>
+  <!-- ↑ ↑ ↓ ↓ ← → ← → B A -->
 
-    </div>
-
-    <!-- ↑ ↑ ↓ ↓ ← → ← → B A -->
-
-    [[block page_scripts]]
-    <!-- Loads the index-specific js for Vue -->
+  [[block page_scripts]]
+  <!-- Loads the index-specific js for Vue -->
 
 
-    <script src="js/index.js"></script>
-    [[end]]
+  <script src="js/index.js"></script>
+  [[end]]
