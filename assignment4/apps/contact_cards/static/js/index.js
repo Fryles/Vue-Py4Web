@@ -105,7 +105,6 @@ app.data = {
 			//click the input element
 			input.click();
 		},
-		toggleReadonly: function (e) {},
 	},
 };
 
