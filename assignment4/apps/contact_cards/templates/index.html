@@ -29,18 +29,18 @@
           </div>
           <div class="media-content">
             <p class="title person-name">
-              <input @input="save_input(i)" @focus="toggle_read_only" @blur="toggle_read_only" type="text"
+              <input @change="save_input(i)" @focus="toggle_read_only" @blur="toggle_read_only" type="text"
                 class="input is-4 title" name="name" placeholder="Name" v-model="i.name" readonly />
             </p>
             <p class="subtitle person-affiliation">
-              <input @input="save_input(i)" type="text" class="input is-6" placeholder="Affiliation" name="affiliation"
+              <input @change="save_input(i)" type="text" class="input is-6" placeholder="Affiliation" name="affiliation"
                 @focus="toggle_read_only" @blur="toggle_read_only" v-model="i.affiliation" readonly />
             </p>
           </div>
           <div class="media-right" @click="delete_contact(i)"><i
               class="delete-button has-text-danger fa-solid fa-trash-can trash"></i></div>
         </div>
-        <textarea @input="save_input(i)" class="textarea" @focus="toggle_read_only" @blur="toggle_read_only"
+        <textarea @change="save_input(i)" class="textarea" @focus="toggle_read_only" @blur="toggle_read_only"
           name="description" placeholder="Description" v-model="i.desc" readonly></textarea>
       </div>
     </div>
@@ -53,7 +53,6 @@
   <!-- Loads the index-specific js for Vue -->
   <script>
     let get_contacts_url = "[[=XML(get_contacts_url)]]";
-    // Add more URLs if you wish.
   </script>
 
   <script src="js/index.js"></script>
