@@ -11,12 +11,7 @@
   <div class="container">
     <h1 class="title">Contacts</h1>
     <div><button class="button is-success" id="add_button" @click="add_contact">Add Contact</button></div>
-
-  </div>
-
-  <!-- Start of contact cards-->
-
-  <div class="container">
+    <!-- Start of contact cards-->
     <div class="card contact mt-4" v-for="i in contacts" :key="i.id">
       <div class="card-content">
         <div class="media">
