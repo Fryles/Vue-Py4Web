@@ -106,12 +106,14 @@ app.data = {
 			input.click();
 		},
 		editable: function (e) {
+			e.preventDefault();
 			let input = e.target;
-			input.readOnly = false;
+			input.setAttribute("readonly", false);
 		},
 		blur: function (e) {
+			e.preventDefault();
 			let input = e.target;
-			input.readOnly = true;
+			input.setAttribute("readonly", true);
 		},
 	},
 };
