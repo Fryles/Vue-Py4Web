@@ -105,9 +105,13 @@ app.data = {
 			//click the input element
 			input.click();
 		},
-		toggle_read_only: function (e) {
+		editable: function (e) {
 			let input = e.target;
-			input.readOnly = !input.readOnly;
+			input.readOnly = false;
+		},
+		blur: function (e) {
+			let input = e.target;
+			input.readOnly = true;
 		},
 	},
 };
