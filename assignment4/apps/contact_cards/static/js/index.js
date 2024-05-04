@@ -105,15 +105,13 @@ app.data = {
 			//click the input element
 			input.click();
 		},
-		editable: function (e) {
-			e.preventDefault();
+		toggleReadonly: function (e) {
 			let input = e.target;
-			input.setAttribute("readonly", false);
-		},
-		blur: function (e) {
-			e.preventDefault();
-			let input = e.target;
-			input.setAttribute("readonly", true);
+			if (input.readOnly) {
+				input.removeAttribute("readonly");
+			} else {
+				input.setAttribute("readonly", "true");
+			}
 		},
 	},
 };
