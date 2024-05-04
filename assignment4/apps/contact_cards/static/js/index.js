@@ -108,11 +108,7 @@ app.data = {
 		toggleReadonly: function (e) {
 			e.preventDefault();
 			let input = e.target;
-			if (input.readOnly) {
-				input.removeAttribute("readonly");
-			} else {
-				input.setAttribute("readonly", "true");
-			}
+			input.readOnly = !input.readOnly;
 		},
 	},
 };
