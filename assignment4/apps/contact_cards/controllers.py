@@ -57,6 +57,7 @@ def index():
 def get_contacts():
     # filter by user email
     contacts = db(db.contact_card.user_email == get_user_email()).select().as_list()
+    print(get_user_email())
     return dict(contacts=contacts)
 
 

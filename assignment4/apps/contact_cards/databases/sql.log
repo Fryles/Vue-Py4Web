@@ -72,3 +72,17 @@ success!
 success!
 success!
 success!
+success!
+timestamp: 2024-05-02T16:23:38.519919
+CREATE TABLE "py4web_session"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "rkey" CHAR(512),
+    "rvalue" TEXT,
+    "expiration" INTEGER,
+    "created_on" TIMESTAMP,
+    "expires_on" TIMESTAMP
+);
+success!
+success!
+success!
+success!
