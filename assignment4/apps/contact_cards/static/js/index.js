@@ -24,12 +24,17 @@ app.data = {
 				image: this.image,
 				id: -this.contacts.length,
 			};
+			if (contact.image === "") {
+				contact.image = "https://bulma.io/assets/images/placeholders/96x96.png";
+				contact.imageUrl =
+					"https://bulma.io/assets/images/placeholders/96x96.png";
+			}
 			//clear fields
 			this.name = "";
 			this.affiliation = "";
 			this.desc = "";
-			this.image = "";
 			this.imageUrl = "https://bulma.io/assets/images/placeholders/96x96.png";
+			this.image = "";
 			this.contacts.push(contact);
 			fetch("/contact_cards/add_contact", {
 				method: "POST",
@@ -38,9 +43,10 @@ app.data = {
 				},
 				body: JSON.stringify(contact),
 			}).then((data) => {
-				console.log(this.contacts);
-				console.log(data);
-				this.contacts[this.contacts.length - 1].id = data.id;
+				data.json().then((data) => {
+					console.log(data);
+					contact.id = data.id;
+				});
 			});
 		},
 		delete_contact: function (item) {
@@ -71,13 +77,12 @@ app.data = {
 				} else {
 					contact.imageUrl = URL.createObjectURL(file);
 					contact.image = dataurl;
-					//update contacts
-					this.contacts = this.contacts.map((c) => {
-						if (c.id === contact.id) {
-							return contact;
+					//update contacts locally
+					for (let i = 0; i < this.contacts.length; i++) {
+						if (this.contacts[i].id === contact.id) {
+							this.contacts[i].image = contact.image;
 						}
-						return c;
-					});
+					}
 					this.save_input(contact);
 				}
 			};
@@ -95,7 +100,6 @@ app.data = {
 			});
 		},
 		click_figure: function (e) {
-			console.log(e.target);
 			//get input element
 			let input = e.target.nextElementSibling;
 			//click the input element
@@ -115,12 +119,6 @@ app.load_data = function () {
 		.then((response) => response.json())
 		.then((data) => {
 			app.vue.contacts = data.contacts;
-			for (let i = 0; i < app.vue.contacts.length; i++) {
-				if (app.vue.contacts[i].image == null) {
-					app.vue.contacts[i].image =
-						"https://bulma.io/assets/images/placeholders/96x96.png";
-				}
-			}
 			console.log(app.vue.contacts);
 		});
 };

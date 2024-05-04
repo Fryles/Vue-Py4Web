@@ -73,7 +73,7 @@ def add_contact():
     # insert data into db
     db.contact_card.insert(**data)
     # return db created id
-    return dict(id=db(db.contact_card.name == data["name"]).select().first().id)
+    return dict(id=db(db.contact_card).select().last().id)
 
 
 # deletes a contact from the db (if the user is the owner of the contact)
