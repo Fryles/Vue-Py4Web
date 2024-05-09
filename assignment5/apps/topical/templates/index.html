@@ -1,0 +1,60 @@
+[[extend 'layout.html']]
+
+<div class="section" id="app">
+  <div class="columns">
+    <div class="column is-three-quarters posts">
+      <div class="control">
+        <div class="field">
+          <label class="label" for="post-input">Post Text</label>
+          <textarea class="textarea" v-model="new_post_content" id="post-input"></textarea>
+        </div>
+        <div class="field">
+          <button id="post-button" class="button" @click="add_post">
+            Post
+          </button>
+        </div>
+      </div>
+      <div class="container">
+        <template v-for="post in posts" :key="post.id">
+          <div class="card post block" v-if="!post.hidden">
+            <div class="card-content">
+              <div class="media">
+                <div class="media-content">
+                  <p class="title is-4 post-content">{{ post.content }}</p>
+                  <p class="subtitle is-6 has-text-info">{{post.email}} at {{ post.time }}</p>
+                </div>
+                <div class="media-right" v-if="post.owned">
+                  <button class="is-danger is-outlined button delete-buttons" @click="delete_post(post)">
+                    <span class="icon">
+                      <i class="fa fa-lg fa-trash"></i>
+                    </span>
+                    <span>
+                      Delete Post
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+    <div class="column tags">
+      <button class="tag button is-medium" :class="{'is-text': !tag.active,'is-primary': tag.active,}"
+        v-for="tag in tags" @click="toggle_tag(tag)">{{tag.tag}}</button>
+    </div>
+  </div>
+</div>
+
+
+[[block page_scripts]]
+<script>
+  let get_posts_url = "[[=XML(get_posts_url)]]";
+  let post_url = "[[=XML(post_url)]]";
+  let delete_post_url = "[[=XML(delete_post_url)]]";
+  let get_email_url = "[[=XML(get_email_url)]]";
+</script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js"></script>
+<script src="[[=URL('static/js/index.js')]]"></script>
+[[end]]
