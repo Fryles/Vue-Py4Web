@@ -13,6 +13,11 @@ app.data = {
 	},
 	methods: {
 		refresh_tags: function () {
+			//sort posts by time
+			this.posts.sort((a, b) => {
+				return new Date(b.time) - new Date(a.time);
+			});
+
 			this.tags = [];
 			for (let post of this.posts) {
 				let tags = extract_tags(post);
@@ -108,7 +113,13 @@ function extract_tags(post) {
 	for (let i = 0; i < post.content.length; i++) {
 		if (post.content[i] == "#") {
 			in_tag = true;
-		} else if (in_tag && post.content[i] == " ") {
+		} else if (
+			in_tag &&
+			(post.content[i] == " " ||
+				post.content[i] == "." ||
+				post.content[i] == "," ||
+				post.content[i] == "\n")
+		) {
 			in_tag = false;
 			tags.push(tag);
 			tag = "";

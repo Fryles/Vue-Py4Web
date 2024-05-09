@@ -24,7 +24,7 @@
                   <p class="subtitle is-6 has-text-info">{{post.email}} at {{ post.time }}</p>
                 </div>
                 <div class="media-right" v-if="post.owned">
-                  <button class="is-danger is-outlined button delete-buttons" @click="delete_post(post)">
+                  <button class="is-danger is-outlined button delete-button" @click="delete_post(post)">
                     <span class="icon">
                       <i class="fa fa-lg fa-trash"></i>
                     </span>
@@ -39,9 +39,11 @@
         </template>
       </div>
     </div>
-    <div class="column tags">
-      <button class="tag button is-medium" :class="{'is-text': !tag.active,'is-primary': tag.active,}"
-        v-for="tag in tags" @click="toggle_tag(tag)">{{tag.tag}}</button>
+    <div class="column">
+      <div class="tags buttons">
+        <button class="tag button is-medium" :class="{'is-text': !tag.active,'is-primary': tag.active,}"
+          v-for="tag in tags" @click="toggle_tag(tag)">{{tag.tag}}</button>
+      </div>
     </div>
   </div>
 </div>
