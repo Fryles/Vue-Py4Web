@@ -30,17 +30,17 @@ def contact_requests(path=None):
             path,
             formstyle=FormStyleBulma,
             grid_class_style=GridClassStyleBulma,
-            query=(db.entries.id > 0),
-            orderby=[db.entries.time],
+            query=(db.contact.id > 0),
+            orderby=[db.contact.time],
             columns=[
-                db.entries.name,
-                db.entries.email,
-                db.entries.phone,
-                db.entries.message,
+                db.contact.name,
+                db.contact.email,
+                db.contact.phone,
+                db.contact.message,
             ],
             search_queries=[
-                ["Search by Name", lambda val: db.entries.name.contains(val)],
-                ["Search by Message", lambda val: db.entries.message.contains(val)],
+                ["By Name", lambda val: db.contact.name.contains(val)],
+                ["By Message", lambda val: db.contact.message.contains(val)],
             ],
         )
         return dict(grid=grid)
@@ -50,7 +50,7 @@ def contact_requests(path=None):
 @action.uses(db, session, "index.html")
 def index():
     form = Form(
-        db.entries, csrf_session=session, formstyle=FormStyleBulma, deletable=False
+        db.contact, csrf_session=session, formstyle=FormStyleBulma, deletable=False
     )
     if form.accepted:
         print(form.vars)

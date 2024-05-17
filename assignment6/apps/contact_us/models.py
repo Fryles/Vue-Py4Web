@@ -16,7 +16,7 @@ def get_time():
 
 
 db.define_table(
-    "entries",
+    "contact",
     Field("time", "datetime", default=get_time, writable=False),
     Field("name", requires=IS_NOT_EMPTY()),
     Field(
