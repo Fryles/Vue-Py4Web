@@ -39,8 +39,11 @@ def contact_requests(path=None):
                 db.contact_request.message,
             ],
             search_queries=[
-                ["By Name", lambda val: db.contact_request.name.contains(val)],
-                ["By Message", lambda val: db.contact_request.message.contains(val)],
+                ["Search by Name", lambda val: db.contact_request.name.contains(val)],
+                [
+                    "Search by Message",
+                    lambda val: db.contact_request.message.contains(val),
+                ],
             ],
         )
         return dict(grid=grid)
