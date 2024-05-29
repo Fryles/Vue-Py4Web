@@ -13,7 +13,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 
-# You can increase this if your server is very slow. 
+# You can increase this if your server is very slow.
 SERVER_WAIT = 0.5
 
 
@@ -22,19 +22,20 @@ def image_to_data_url(image_path):
     Convert an image to a data URL.
     """
     # Read the image file in binary mode
-    with open(image_path, 'rb') as image_file:
+    with open(image_path, "rb") as image_file:
         image_data = image_file.read()
         base64_encoded_data = base64.b64encode(image_data)
-        base64_string = base64_encoded_data.decode('utf-8')
-        mime_type = 'image/jpeg' if image_path.endswith('.jpg') else 'image/png'
+        base64_string = base64_encoded_data.decode("utf-8")
+        mime_type = "image/jpeg" if image_path.endswith(".jpg") else "image/png"
         return f"data:{mime_type};base64,{base64_string}"
 
 
 class StopGrading(Exception):
     pass
 
+
 class py4web(object):
-    
+
     def start_server(self, path_to_app, port=8400, debug=False):
         self.debug = debug
         print("Starting the server")
@@ -82,8 +83,8 @@ class py4web(object):
         else:
             browser_options = webdriver.ChromeOptions()
             browser_options.add_argument("--headless")
-            self.browser =  webdriver.Chrome(options=browser_options)
-        
+            self.browser = webdriver.Chrome(options=browser_options)
+
     def __del__(self):
         if self.server:
             self.stop_server()
@@ -96,26 +97,30 @@ class py4web(object):
         if not self.debug:
             self.browser.quit()
             print("- browser stopped.")
-        
+
     def goto(self, path):
         self.browser.get(f"http://127.0.0.1:{self.port}/{self.app_name}/{path}")
         self.browser.implicitly_wait(0.2)
-        
+
     def refresh(self):
         self.browser.refresh()
         self.browser.implicitly_wait(0.2)
-        
+
     def register_user(self, user):
         """Registers a user."""
         self.goto("auth/register")
         self.browser.find_element(By.NAME, "email").send_keys(user["email"])
         self.browser.find_element(By.NAME, "password").send_keys(user["password"])
         self.browser.find_element(By.NAME, "password_again").send_keys(user["password"])
-        self.browser.find_element(By.NAME, "first_name").send_keys(user.get("first_name", ""))
-        self.browser.find_element(By.NAME, "last_name").send_keys(user.get("last_name", ""))
+        self.browser.find_element(By.NAME, "first_name").send_keys(
+            user.get("first_name", "")
+        )
+        self.browser.find_element(By.NAME, "last_name").send_keys(
+            user.get("last_name", "")
+        )
         self.browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
-        
-    def login(self, user):     
+
+    def login(self, user):
         self.goto("auth/login")
         self.browser.find_element(By.NAME, "email").send_keys(user["email"])
         self.browser.find_element(By.NAME, "password").send_keys(user["password"])
@@ -123,15 +128,15 @@ class py4web(object):
 
 
 class ProtoAssignment(py4web):
-    
+
     def __init__(self, app_path, debug=False):
         super().__init__()
         self.start_server(app_path, debug=debug)
         self._comments = []
         self.user1 = self.get_user()
         self.user2 = self.get_user()
-        self.user1['email'] = "admin@example.com"
-        
+        self.user1["email"] = "admin@example.com"
+
     def get_user(self):
         return {
             "email": uuid.uuid4().hex + "@ucsc.edu",
@@ -139,14 +144,14 @@ class ProtoAssignment(py4web):
             "first_name": str(uuid.uuid4()),
             "last_name": str(uuid.uuid4()),
         }
-    
+
     def append_comment(self, points, comment):
         self._comments.append((points, comment))
-        
+
     def setup(self):
         self.register_user(self.user1)
         self.register_user(self.user2)
-            
+
     def grade(self):
         self.setup()
         steps = [getattr(self, name) for name in dir(self) if name.startswith("step")]
@@ -172,7 +177,7 @@ class ProtoAssignment(py4web):
 
 
 class Assignment(ProtoAssignment):
-    
+
     def __init__(self, app_path, debug=False):
         super().__init__(os.path.join(app_path, "apps/contact_us"), debug=debug)
         self.key1 = str(uuid.uuid4())
@@ -188,137 +193,195 @@ class Assignment(ProtoAssignment):
             "name": str(uuid.uuid4()) + self.key2,
             "email": "c@b.com",
             "phone": "111-222-3333",
-            "message": str(uuid.uuid4()) + self.key3 
+            "message": str(uuid.uuid4()) + self.key3,
         }
         self.info3 = {
             "name": str(uuid.uuid4()) + self.key1,
             "email": "e@f.org",
             "phone": "111-222-3333",
-            "message": str(uuid.uuid4()) + self.key3 
+            "message": str(uuid.uuid4()) + self.key3,
         }
         self.emails = {f["email"] for f in [self.info1, self.info2, self.info3]}
 
     def add_contact(self, c):
-        self.goto('index')
+        self.goto("index")
         input_name = self.browser.find_element(By.CSS_SELECTOR, "input[name='name']")
         input_name.send_keys(c["name"])
         input_email = self.browser.find_element(By.CSS_SELECTOR, "input[name='email']")
         input_email.send_keys(c["email"])
         input_phone = self.browser.find_element(By.CSS_SELECTOR, "input[name='phone']")
         input_phone.send_keys(c["phone"])
-        input_message = self.browser.find_element(By.CSS_SELECTOR, "textarea[name='message']")
+        input_message = self.browser.find_element(
+            By.CSS_SELECTOR, "textarea[name='message']"
+        )
         input_message.send_keys(c["message"])
         self.browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
         return True
-        
-        
+
     def step1(self):
         """Adding contact information"""
         self.add_contact(self.info1)
         self.add_contact(self.info2)
         self.add_contact(self.info3)
-        errors = self.browser.find_elements(By.CSS_SELECTOR, "p.py4web-validation-error")
+        errors = self.browser.find_elements(
+            By.CSS_SELECTOR, "p.py4web-validation-error"
+        )
         assert len(errors) == 0, "S1-1 There should be no errors."
         return 1, "Posts are added correctly."
-    
+
     def step2(self):
         """Empty name or phone"""
         infoa = dict(self.info1)
         infoa["name"] = ""
         self.add_contact(infoa)
-        assert self.browser.find_element(By.CSS_SELECTOR, "p.py4web-validation-error") is not None, "S2-1 Empty names should be rejected."
+        assert (
+            self.browser.find_element(By.CSS_SELECTOR, "p.py4web-validation-error")
+            is not None
+        ), "S2-1 Empty names should be rejected."
         infob = dict(self.info2)
         infob["phone"] = ""
         self.add_contact(infoa)
-        assert self.browser.find_element(By.CSS_SELECTOR, "p.py4web-validation-error") is not None, "S2-2 Empty phones should be rejected."
-        return 1, "Empty names and phones are rejected."   
-    
+        assert (
+            self.browser.find_element(By.CSS_SELECTOR, "p.py4web-validation-error")
+            is not None
+        ), "S2-2 Empty phones should be rejected."
+        return 1, "Empty names and phones are rejected."
+
     def step3(self):
         """No bad emails"""
         infoa = dict(self.info1)
         infoa["email"] = "hello@there"
         self.add_contact(infoa)
-        assert self.browser.find_element(By.CSS_SELECTOR, "p.py4web-validation-error") is not None, "S3-1 Bad emails should be rejected."
+        assert (
+            self.browser.find_element(By.CSS_SELECTOR, "p.py4web-validation-error")
+            is not None
+        ), "S3-1 Bad emails should be rejected."
         infob = dict(self.info2)
         infob["email"] = ""
         self.add_contact(infoa)
-        assert self.browser.find_element(By.CSS_SELECTOR, "p.py4web-validation-error") is not None, "S3-2 Empty emails should be rejected."
+        assert (
+            self.browser.find_element(By.CSS_SELECTOR, "p.py4web-validation-error")
+            is not None
+        ), "S3-2 Empty emails should be rejected."
         infob = dict(self.info2)
         infob["email"] = "@somewhere.com"
         self.add_contact(infoa)
-        assert self.browser.find_element(By.CSS_SELECTOR, "p.py4web-validation-error") is not None, "S3-3 Bad emails should be rejected."
-        return 1, "Empty or bad emails are rejected." 
-    
+        assert (
+            self.browser.find_element(By.CSS_SELECTOR, "p.py4web-validation-error")
+            is not None
+        ), "S3-3 Bad emails should be rejected."
+        return 1, "Empty or bad emails are rejected."
+
     def step4(self):
         """Only admin@example.com can see the grid."""
         self.goto("contact_requests")
         grid = self.browser.find_elements(By.CSS_SELECTOR, "table.grid-table")
-        assert len(grid) == 0, "S4-1 Non-logged in users should not be able to see the grid."
+        assert (
+            len(grid) == 0
+        ), "S4-1 Non-logged in users should not be able to see the grid."
         form = self.browser.find_elements(By.CSS_SELECTOR, "form")
-        assert len(form) == 1, "S4-2 Non-logged in users should be redirected to the index page."
+        assert (
+            len(form) == 1
+        ), "S4-2 Non-logged in users should be redirected to the index page."
         self.login(self.user2)
         self.goto("contact_requests")
         grid = self.browser.find_elements(By.CSS_SELECTOR, "table.grid-table")
-        assert len(grid) == 0, "S4-3 Non-logged in users should not be able to see the grid."
+        assert (
+            len(grid) == 0
+        ), "S4-3 Non-logged in users should not be able to see the grid."
         form = self.browser.find_elements(By.CSS_SELECTOR, "form")
-        assert len(form) == 1, "S4-4 Non-logged in users should be redirected to the index page."
+        assert (
+            len(form) == 1
+        ), "S4-4 Non-logged in users should be redirected to the index page."
         self.login(self.user1)
         self.goto("contact_requests")
         grid = self.browser.find_elements(By.CSS_SELECTOR, "table.grid-table")
-        assert len(grid) == 1, "S4-5 The admin@example.com user should be able to see the grid."
+        assert (
+            len(grid) == 1
+        ), "S4-5 The admin@example.com user should be able to see the grid."
         return 1, "Only admin@example.com can access the grid."
-             
+
     def step5(self):
         self.goto("contact_requests")
-        email_cells = self.browser.find_elements(By.CSS_SELECTOR, "td.grid-col-contact_request_email")
+        email_cells = self.browser.find_elements(
+            By.CSS_SELECTOR, "td.grid-col-contact_request_email"
+        )
         emails = {e.text for e in email_cells}
         assert emails == self.emails, "S5-1 The emails are not correct in the grid."
-        message_cells = self.browser.find_elements(By.CSS_SELECTOR, "td.grid-col-contact_request_message")
+        message_cells = self.browser.find_elements(
+            By.CSS_SELECTOR, "td.grid-col-contact_request_message"
+        )
         messages = {e.text for e in message_cells}
-        correct_messages = {self.info1["message"], self.info2["message"], self.info3["message"]}
-        assert messages == correct_messages, "S5-2 The messages are not correct in the grid."        
+        correct_messages = {
+            self.info1["message"],
+            self.info2["message"],
+            self.info3["message"],
+        }
+        assert (
+            messages == correct_messages
+        ), "S5-2 The messages are not correct in the grid."
         return 1, "The grid contains the correct information."
-    
+
     def step6(self):
         # First a successful search.
         self.goto("contact_requests")
-        select = Select(self.browser.find_element(By.CSS_SELECTOR, "select.grid-search-form-input"))
+        select = Select(
+            self.browser.find_element(By.CSS_SELECTOR, "select.grid-search-form-input")
+        )
         select.select_by_visible_text("Search by Name")
         inp = self.browser.find_element(By.CSS_SELECTOR, "input.grid-search-form-input")
         inp.send_keys(self.key1)
         self.browser.find_element(By.CSS_SELECTOR, "input.grid-search-button").click()
-        email_cells = self.browser.find_elements(By.CSS_SELECTOR, "td.grid-col-contact_request_email")
+        email_cells = self.browser.find_elements(
+            By.CSS_SELECTOR, "td.grid-col-contact_request_email"
+        )
         emails = {e.text for e in email_cells}
-        assert emails == {f["email"] for f in [self.info1, self.info3]}, "S6-1 Search by name does not work."
-        # Then an empty search. 
-        select = Select(self.browser.find_element(By.CSS_SELECTOR, "select.grid-search-form-input"))
+        assert emails == {
+            f["email"] for f in [self.info1, self.info3]
+        }, "S6-1 Search by name does not work."
+        # Then an empty search.
+        select = Select(
+            self.browser.find_element(By.CSS_SELECTOR, "select.grid-search-form-input")
+        )
         select.select_by_visible_text("Search by Name")
         inp = self.browser.find_element(By.CSS_SELECTOR, "input.grid-search-form-input")
         inp.send_keys(str(uuid.uuid4()))
         self.browser.find_element(By.CSS_SELECTOR, "input.grid-search-button").click()
-        email_cells = self.browser.find_elements(By.CSS_SELECTOR, "td.grid-col-contact_request_email")
+        email_cells = self.browser.find_elements(
+            By.CSS_SELECTOR, "td.grid-col-contact_request_email"
+        )
         assert len(email_cells) == 0, "S6-12 Search by name returns spurious results."
         return 1, "Search by name works."
-        
+
     def step7(self):
         self.goto("contact_requests")
         # First a successful search.
-        select = Select(self.browser.find_element(By.CSS_SELECTOR, "select.grid-search-form-input"))
+        select = Select(
+            self.browser.find_element(By.CSS_SELECTOR, "select.grid-search-form-input")
+        )
         select.select_by_visible_text("Search by Message")
         inp = self.browser.find_element(By.CSS_SELECTOR, "input.grid-search-form-input")
         inp.send_keys(self.key3)
         self.browser.find_element(By.CSS_SELECTOR, "input.grid-search-button").click()
-        email_cells = self.browser.find_elements(By.CSS_SELECTOR, "td.grid-col-contact_request_email")
+        email_cells = self.browser.find_elements(
+            By.CSS_SELECTOR, "td.grid-col-contact_request_email"
+        )
         emails = {e.text for e in email_cells}
         print("Emails:", emails)
-        assert emails == {f["email"] for f in [self.info2, self.info3]}, "S7-1 Search by message does not work."
-        # Then an empty search. 
-        select = Select(self.browser.find_element(By.CSS_SELECTOR, "select.grid-search-form-input"))
+        assert emails == {
+            f["email"] for f in [self.info2, self.info3]
+        }, "S7-1 Search by message does not work."
+        # Then an empty search.
+        select = Select(
+            self.browser.find_element(By.CSS_SELECTOR, "select.grid-search-form-input")
+        )
         select.select_by_visible_text("Search by Message")
         inp = self.browser.find_element(By.CSS_SELECTOR, "input.grid-search-form-input")
         inp.send_keys(str(uuid.uuid4()))
         self.browser.find_element(By.CSS_SELECTOR, "input.grid-search-button").click()
-        email_cells = self.browser.find_elements(By.CSS_SELECTOR, "td.grid-col-contact_request_email")
+        email_cells = self.browser.find_elements(
+            By.CSS_SELECTOR, "td.grid-col-contact_request_email"
+        )
         assert len(email_cells) == 0, "S7-2 Search by message returns spurious results."
         return 1, "Search by message works."
 
@@ -326,23 +389,35 @@ class Assignment(ProtoAssignment):
         self.goto("contact_requests")
         for i in range(3):
             rows = self.browser.find_elements(By.CSS_SELECTOR, "tr[role='row']")
-            name_cells = [r.find_element(By.CSS_SELECTOR, "td.grid-col-contact_request_name") for r in rows]
+            name_cells = [
+                r.find_element(By.CSS_SELECTOR, "td.grid-col-contact_request_name")
+                for r in rows
+            ]
             names = [n.text for n in name_cells]
             k = random.randint(0, len(names) - 1)
             del_button = rows[k].find_element(By.CSS_SELECTOR, "a.grid-delete-button")
             del_button.click()
-            self.browser.switch_to.alert.accept();
+            self.browser.switch_to.alert.accept()
             rows = self.browser.find_elements(By.CSS_SELECTOR, "tr[role='row']")
-            name_cells = [r.find_element(By.CSS_SELECTOR, "td.grid-col-contact_request_name") for r in rows]
+            name_cells = [
+                r.find_element(By.CSS_SELECTOR, "td.grid-col-contact_request_name")
+                for r in rows
+            ]
             remaining_names = [n.text for n in name_cells]
             names.pop(k)
             assert names == remaining_names, "S8-1 Deletion does not work."
         return 1, "Deletion works"
-            
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--debug', default=False, action='store_true',
-                        help="Debug mode (show browser).")
+    parser.add_argument(
+        "-d",
+        "--debug",
+        default=False,
+        action="store_true",
+        help="Debug mode (show browser).",
+    )
 
     tests = Assignment(".", debug=parser.parse_args().debug)
     tests.grade()
