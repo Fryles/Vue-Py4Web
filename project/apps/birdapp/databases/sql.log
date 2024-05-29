@@ -1,0 +1,54 @@
+timestamp: 2024-05-28T19:34:51.873480
+CREATE TABLE "py4web_session"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "rkey" CHAR(512),
+    "rvalue" TEXT,
+    "expiration" INTEGER,
+    "created_on" TIMESTAMP,
+    "expires_on" TIMESTAMP
+);
+success!
+timestamp: 2024-05-28T19:34:51.880481
+CREATE TABLE "auth_user"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "email" CHAR(512) UNIQUE,
+    "password" CHAR(512),
+    "first_name" CHAR(512),
+    "last_name" CHAR(512),
+    "sso_id" CHAR(512),
+    "action_token" CHAR(512),
+    "last_password_change" TIMESTAMP,
+    "past_passwords_hash" TEXT
+);
+success!
+timestamp: 2024-05-28T19:34:51.885491
+CREATE TABLE "auth_user_tag_groups"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "tagpath" CHAR(512),
+    "record_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2024-05-28T19:34:51.892002
+CREATE TABLE "bird_sightings"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "bird_name" CHAR(512),
+    "latitude" DOUBLE,
+    "longitude" DOUBLE,
+    "time" TIMESTAMP,
+    "email" CHAR(512)
+);
+success!
+timestamp: 2024-05-28T19:35:24.297879
+CREATE TABLE "checklists"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "checklist_id" CHAR(512),
+    "bird_name" CHAR(512),
+    "observed" INTEGER
+);
+success!
+timestamp: 2024-05-28T19:35:24.303389
+CREATE TABLE "species"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "bird_name" CHAR(512)
+);
+success!
